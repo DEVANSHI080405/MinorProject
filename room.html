@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+</html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iot Based Intelligent Lighting Solution For Moderm Living</title>
+    <link rel="stylesheet" href="styles.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    
+</head>
+<body style="background-color: brown;background-image: url('image\ 2.jpg'); background-size: 1080px; background-position: center; margin-top: 3%; margin-bottom: 3%; margin-left: 3%; margin-right: 3%;filter: brightness(0.9) ">
+    <div class="container">
+        <h2 >Welcome  <h3 id='username'></h3> </h2>
+        <p>Here are the details of your <h1 id='roomname'></h1> and smart devices:</p>
+
+        <div class="container-sm" id="data-container">
+
+
+        </div>
+    </div>
+
+</body>
+    <script>
+     
+
+        displayQueryParameters();
+        // Function to get query parameters and display them
+        function displayQueryParameters() {
+            // Get the current URL
+           const params = new URLSearchParams(window.location.search);  
+           
+                
+        const username = params.get("username");
+        const roomname = params.get("roomname");
+        const user = document.getElementById('username');
+        user.innerHTML = username;
+           
+        const room = document.getElementById('roomname');
+        room.innerHTML = roomname;
+
+           fetch(`http://localhost:3000/roomLightDetails?username=${username}&roomname=${roomname}`)
+                    .then(response => response.json() )  
+                    .then(data => {
+                        const dataContainer = document.getElementById('data-container');
+                        dataContainer.innerHTML = '';  // Clear existing content
+                        // Display user data
+                        // dataContainer.innerHTML = `<strong>${data.room_name}</strong>, NumberOfLight: ${data.num_lights}, RoomId: ${data.room_id}`;
+                        if (Array.isArray(data) && data.length > 0) {
+                        let htmlContent = '<ul>'; // Start an unordered list to display rooms
+                        data.forEach(roomlight => {
+                            const statusClass = roomlight.Status == 1 ? "on" : "off";
+                            const lightStatus = roomlight.Status == 1 ? "ON" : "OFF";
+
+                            htmlContent += `
+                            <div class="room-container">
+                                 <div class="room-card">
+                                    <div class="room-name" id="room-${roomlight.lightno}">${roomlight.lightNo}</div>                
+                                    <div class="lights-count ${statusClass}">${lightStatus}</div>
+                                </div>
+                            <div>`;
+                                // <div id ="status" class="lights-count">${roomlight.Status} </div>
+                                // <button onclick="${room.room_name}DetailsFunction()" id="roomDetails-${room.room_name}">Details</button>
+                        });
+                        htmlContent += '</ul>';  // Close the unordered list
+                        dataContainer.innerHTML = htmlContent;  // Insert the formatted HTML into the container
+             
+                   
+                    } else {
+                        dataContainer.textContent = "No rooms available.";
+                    }
+                    })
+                    .catch(error => console.error('Error:', error));
+                
+
+          
+        }
+
+
+     
+    </script>
+</html>

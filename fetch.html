@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Home Lighting</title>
+</head>
+<body>
+    <h1>User Details</h1>
+    <div id="user-details"></div>
+    <script>
+        // Fetch user details from the server
+        fetch('http://localhost:3000/get-data')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                const userDetailsDiv = document.getElementById('user-details');
+                data.forEach(user => {
+                    userDetailsDiv.innerHTML += '<p>${user.user_name}: ${user.email_id}</p>';
+                });
+            })
+            .catch(error => {
+            console.error('Error:', error);
+        });
+} alse {
+    console.error(Form not found!);
+}
+    </script>
+</body>
+</html>

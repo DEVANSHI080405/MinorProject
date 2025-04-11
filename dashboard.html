@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+</html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iot Based Intelligent Lighting Solution For Moderm Living</title>
+    <link rel="stylesheet" href="styles.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    
+</head>
+<body style="background-color: brown;background-image: url('image\ 2.jpg'); background-size: 1080px; background-position: center; margin-top: 3%; margin-bottom: 3%; margin-left: 3%; margin-right: 3%;filter: brightness(0.9) ">
+    <div class="container">
+        <h2 >Welcome  <h3 id='username'></h3> </h2>
+        <p>Here are the details of your house and smart devices:</p>
+
+        <div class="container-sm" id="data-container">
+
+
+        </div>
+        <!-- <div class="house-info">
+            <h3>House Details:</h3>
+            <p id="location">Location: XYZ Street</p>
+            <p id="roomno">Number of Rooms: 3</p>
+            <p id="lightno">Total Lights: 10</p>
+        </div>
+
+        <div class="smart-things">
+            <h3>Smart Devices:</h3>
+            <ul>
+                <li>Living Room Light - Status: ON</li>
+                <li>Bedroom Light - Status: OFF</li>
+                <li>Kitchen Light - Status: ON</li>
+            </ul>
+        </div>  -->
+    </div>
+
+</body>
+    <script>
+     
+
+        displayQueryParameters();
+        // Function to get query parameters and display them
+        function displayQueryParameters() {
+            // Get the current URL
+           const params = new URLSearchParams(window.location.search);         
+           const username = params.get("username");
+           const user = document.getElementById('username');
+           user.innerHTML = username;
+
+           fetch(`http://localhost:3000/rooms/${username}`)
+                    .then(response => response.json() )  
+                    .then(data => {                    
+                        const dataContainer = document.getElementById('data-container');
+                        dataContainer.innerHTML = '';  // Clear existing content
+
+                        // Display user data
+                        // dataContainer.innerHTML = `<strong>${data.room_name}</strong>, NumberOfLight: ${data.num_lights}, RoomId: ${data.room_id}`;
+                        if (Array.isArray(data) && data.length > 0) {
+                        let htmlContent = '<ul>'; // Start an unordered list to display rooms
+                        data.forEach(room => {
+                            htmlContent += `
+                            <div class="room-container">
+                                 <div class="room-card">
+                                        <div class="room-name" id="room-${room.room_name}">${room.room_name}</div>
+                                        <div class="lights-count">${room.num_lights} </div>
+                                        <button onclick="${room.room_name}DetailsFunction()" id="roomDetails-${room.room_name}">Details</button>
+                                </div>
+                            <div>`;
+                        });
+                        htmlContent += '</ul>';  // Close the unordered list
+                        dataContainer.innerHTML = htmlContent;  // Insert the formatted HTML into the container
+                    } else {
+                        dataContainer.textContent = "No rooms available.";
+                    }
+                    
+                    
+                    
+                    })
+                    .catch(error => console.error('Error:', error));
+                
+
+          
+        }
+
+
+        function HallDetailsFunction() {
+
+            const params = new URLSearchParams(window.location.search);         
+            const username = params.get("username");
+            const roomname = "Hall";
+            window.location.href = 'room.html?username='+ username + "&roomname="+roomname;
+
+        }
+
+        
+        function KitchenDetailsFunction() {
+
+            const params = new URLSearchParams(window.location.search);         
+            const username = params.get("username");
+            const roomname = "Kitchen";
+            window.location.href = 'room.html?username='+ username + "&roomname="+roomname;
+
+        }
+
+
+        function BedroomDetailsFunction() {
+
+            const params = new URLSearchParams(window.location.search);         
+            const username = params.get("username");
+            const roomname = "Bedroom";
+            window.location.href = 'room.html?username='+ username + "&roomname="+roomname;
+
+        }
+
+    
+    </script>
+</html>
