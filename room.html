@@ -109,27 +109,6 @@
             })
             .catch(error => console.error('Error:', error));
         }
-
-
-        function KitchenSwitchFunction() {
-
-            const params = new URLSearchParams(window.location.search);         
-            const username = params.get("username");
-            const roomname = "Kitchen";
-            window.location.href = 'room.html?username='+ username + "&roomname="+roomname;
-
-        }
-
-
-        function BedroomSwitchFunction() {
-
-            const params = new URLSearchParams(window.location.search);         
-            const username = params.get("username");
-            const roomname = "Bedroom";
-            window.location.href = 'room.html?username='+ username + "&roomname="+roomname;
-
-        }
-
      
     </script>
 </html>
