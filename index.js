@@ -4,7 +4,7 @@ const mysql = require('mysql2');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors({ origin: '*', credentials: true, optionSuccessStatus: 200 }));
@@ -147,6 +147,7 @@ app.get('/users', (req, res) => {
 // Endpoint to get room details for a specific user
 app.get('/rooms/:username', (req, res) => {
   const { username } = req.params;
+  console.log(username);
   connection.query('SELECT * FROM RoomDetails WHERE User_Name = ?', [username], (err, results) => {
       if (err) throw err;
       res.json(results);
@@ -155,14 +156,43 @@ app.get('/rooms/:username', (req, res) => {
 
 // Endpoint to get room details for a specific user
 app.get('/roomLightDetails', (req, res) => {
-  const { user_name } = req.query.username;
-  const { room_name } = req.query.roomname;
+  const  user_name  = req.query.username;
+  const  room_name  = req.query.roomname;
   const sql = 'SELECT * FROM RoomLightDetails WHERE user_name = ? AND room_name = ?';
   connection.query(sql, [req.query.username, req.query.roomname], (err, results) => {
     if (err) {
       return res.status(500).json({ error: 'Internal server error' });
     }
     res.json(results); 
+  });
+});
+
+app.put('/toggleSwitch', (req, res) => {
+  const user_name = req.body.username;
+  const room_name = req.body.roomname;
+  const lightNo = req.body.lightNo;
+
+  // First, get the current status
+  const selectSql = 'SELECT Status FROM RoomLightDetails WHERE user_name = ? AND room_name = ? AND lightNo = ?';
+  connection.query(selectSql, [user_name, room_name, lightNo], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error fetching current status' });
+    }
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Light not found' });
+    }
+
+    // Toggle the status
+    const currentStatus = results[0].Status;
+    const newStatus = currentStatus === 1 ? 0 : 1;
+
+    const updateSql = 'UPDATE RoomLightDetails SET Status = ? WHERE user_name = ? AND room_name = ? AND lightNo = ?';
+    connection.query(updateSql, [newStatus, user_name, room_name, lightNo], (err2, updateResults) => {
+      if (err2) {
+        return res.status(500).json({ error: 'Error updating status' });
+      }
+      res.json({ success: true, newStatus, lightNo });
+    });
   });
 });
   

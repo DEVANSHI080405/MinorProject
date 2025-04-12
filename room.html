@@ -57,16 +57,17 @@
                         data.forEach(roomlight => {
                             const statusClass = roomlight.Status == 1 ? "on" : "off";
                             const lightStatus = roomlight.Status == 1 ? "ON" : "OFF";
-
+                             
                             htmlContent += `
                             <div class="room-container">
-                                 <div class="room-card">
-                                    <div class="room-name" id="room-${roomlight.lightno}">${roomlight.lightNo}</div>                
-                                    <div class="lights-count ${statusClass}">${lightStatus}</div>
+                                <div class="room-card">
+                                    <div class="room-name">${roomlight.lightNo}</div>                
+                                    <div class="lights-count" id="room-${roomlight.lightNo}">${lightStatus}</div>
+                                    <button onclick="SwitchFunction('${roomlight.lightNo}')" id="RoomLight-${roomlight.lightNo}">Switch</button>
                                 </div>
                             <div>`;
-                                // <div id ="status" class="lights-count">${roomlight.Status} </div>
-                                // <button onclick="${room.room_name}DetailsFunction()" id="roomDetails-${room.room_name}">Details</button>
+                             //   <button onclick="${roomlight.room_name}SwitchFunction('${roomlight.lightNo}')" id="RoomLight-${roomlight.lightNo}">Switch</button>
+                            
                         });
                         htmlContent += '</ul>';  // Close the unordered list
                         dataContainer.innerHTML = htmlContent;  // Insert the formatted HTML into the container
@@ -82,6 +83,52 @@
           
         }
 
+        function SwitchFunction(light) {
+            const params = new URLSearchParams(window.location.search);         
+            const username = params.get("username");
+            const roomname = params.get("roomname");
+            const lightNo = light;
+            //window.location.href = 'room.html?username='+ username + "&roomname="+roomname;
+
+            fetch('http://localhost:3000/toggleSwitch', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username,  roomname,  lightNo })
+            })
+            .then(response => response.json() ) 
+            .then(data => {
+                const lightNo = 'room-' + data.lightNo;               
+                const dataContainer = document.getElementById(lightNo);
+                if (data.newStatus == "1") {
+                    dataContainer.innerText = "ON";
+                } else {
+                    dataContainer.innerText = "OFF";
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+
+        function KitchenSwitchFunction() {
+
+            const params = new URLSearchParams(window.location.search);         
+            const username = params.get("username");
+            const roomname = "Kitchen";
+            window.location.href = 'room.html?username='+ username + "&roomname="+roomname;
+
+        }
+
+
+        function BedroomSwitchFunction() {
+
+            const params = new URLSearchParams(window.location.search);         
+            const username = params.get("username");
+            const roomname = "Bedroom";
+            window.location.href = 'room.html?username='+ username + "&roomname="+roomname;
+
+        }
 
      
     </script>
