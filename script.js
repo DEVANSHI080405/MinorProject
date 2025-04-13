@@ -19,8 +19,14 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(response => response.json() )  
             .then(data => {
-                 alert("Login SuccessFull");
-                 data != null ? window.location.href = ('dashboard.html?username=' + username) : alert("Invalid Input Request")})
+                if(data.message === "Login SuccessFull")
+                {
+                    alert("Login SuccessFull");
+                    window.location.href = ('dashboard.html?username=' + username) 
+                }else
+                {
+                    alert("Invalid Login Request");
+                }})
             .catch(error => console.error('Error:', error));
         });
     } else {
@@ -89,21 +95,21 @@ registerButton.addEventListener('click', function (e) {
         roomno++;
     }
       
-if(newUsername.length == 0){
-alert("Enter Username");
-}
-else if(email.length == 0){
-    alert("Enter Email");
-}
-else if(password.length == 0){
-    alert("Enter Password");
-}
-else if(location.length == 0){
-    alert("Enter location");
-}
-else if(roomno.length == 0){
-    alert("Enter Lights For Your Rooms");
-}
+    if(newUsername.length == 0){
+    alert("Enter Username");
+    }
+    else if(email.length == 0){
+        alert("Enter Email");
+    }
+    else if(password.length == 0){
+        alert("Enter Password");
+    }
+    else if(location.length == 0){
+        alert("Enter location");
+    }
+    else if(roomno.length == 0){
+        alert("Enter Lights For Your Rooms");
+    }
 
 else{
     // Simulate registration (just a demo without actual validation)
@@ -115,13 +121,28 @@ else{
         body: JSON.stringify({ newUsername,  email, 
            password, location,  roomno, lightno, hallLights, roomLights, kitchenlights })
     })
+    .then(response => response.json())
     .then(data => {
-        alert("Registered SuccessFull");
-        data != null ?  window.location.href =  (index.html) //('dashboard.html?username=' + newUsername)
-        :   window.location.href = 'index.html' })
+        if (data.message === "User registered successfully") {
+            alert('Registration Successful');
+        } else {
+            alert('Registration Failure - User may already exist or failed to save user');
+        }
+    })
    .catch(error => console.error('Error:', error));
 }
 });
+
+
+// if(data.message != 'User registered successfully')  
+//     {
+//         alert('Registration Failure - User may already exist or Failed to save user');  
+//     }
+//     else
+//     {   
+//         alert('Registration Successfull');         
+//         window.location.href = ('dashboard.html?username=' + newUsername)
+//     }})
 
 // Show login form by default
 loginForm.style.display = 'block';

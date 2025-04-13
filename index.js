@@ -40,9 +40,8 @@ connection.connect((err) => {
   
 // POST request to register a new user
 app.post('/register', (req, res) => {
-    // const { user_name , email_id , password, location , total_room ,total_lights  } = req.body;
     const user = {  user_name : req.body.newUsername , email_id : req.body.email, 
-      password : req.body.password, location : req.body.location ,
+       password : req.body.password, location : req.body.location ,
        total_room : req.body.roomno, total_lights : req.body.lightno, 
        };
 
@@ -58,8 +57,6 @@ app.post('/register', (req, res) => {
       ['Bedroom', req.body.kitchenlights]
     ];    
 
-
-
     // Map rooms to include the same userid
     const values = rooms.map(([name, lights]) => [user.user_name, name, lights]);
       
@@ -70,43 +67,45 @@ app.post('/register', (req, res) => {
     ];
 
     // Check if the user already exists
-    connection.query('SELECT * FROM userdetails WHERE user_name = ?', [user.user_name], (err, results) => {
+    connection.query('SELECT * FROM userdetails WHERE user_name = ? or email_id = ?', [user.user_name, user.email_id], (err, results) => {
       if (err) {
         return res.status(500).send('Database error');
       }
   
       if (results.length > 0) {
-        return res.status(400).send('Username already exists');
+        return res.status(400).json({"message" :'Username already exists'});
       }
-        
-      connection.query('INSERT INTO userdetails SET ?', user, (err) => {
-        if (err) {
-          return res.status(500).send('Error saving user');
-        }
-        connection.query('INSERT INTO roomdetails (user_name, room_name, num_lights) VALUES ?', [values], (err) => {
-              if (err) {
-                return res.status(500).send('Error saving rom details');
-              }   
-              
-              let roomdetailsvalues = [];
-              Rooms.forEach(v => {
-                for (let i = 1; i <= v.lights_count; i++) {
-                  const lightNo = `light${i}`;
-                  const status = (v.room_name === 'Kitchen' && i === 1) || (v.room_name === 'Bedroom' && i === 2) || (v.room_name === 'Hall' && i === 3);
-                  roomdetailsvalues.push([user.user_name, v.room_name, lightNo, false]);
-                }
-              });
-
-              console.log(roomdetailsvalues);
-              connection.query('INSERT INTO roomlightdetails (user_name, room_name, lightNo, Status) VALUES ?', [roomdetailsvalues], (err) => {
+      else
+      {
+        connection.query('INSERT INTO userdetails SET ?', user, (err) => {
+          if (err) {
+            return res.status(500).send('Error saving user');
+          }
+          connection.query('INSERT INTO roomdetails (user_name, room_name, num_lights) VALUES ?', [values], (err) => {
                 if (err) {
-                  console.log(err);
                   return res.status(500).send('Error saving rom details');
-                }          
-                res.send('User registered successfully');        
-              });      
+                }   
+                
+                let roomdetailsvalues = [];
+                Rooms.forEach(v => {
+                  for (let i = 1; i <= v.lights_count; i++) {
+                    const lightNo = `light${i}`;
+                    //const status = (v.room_name === 'Kitchen' && i === 1) || (v.room_name === 'Bedroom' && i === 2) || (v.room_name === 'Hall' && i === 3);
+                    roomdetailsvalues.push([user.user_name, v.room_name, lightNo, false]);
+                  }
+                });
+  
+                connection.query('INSERT INTO roomlightdetails (user_name, room_name, lightNo, Status) VALUES ?', [roomdetailsvalues], (err) => {
+                  if (err) {
+                    
+                    return res.status(500).send('Error saving rom details');
+                  }          
+                  
+                  return res.status(200).json({"message" : 'User registered successfully'});        
+                });      
+          });
         });
-      });
+      }   
     });
   });
   
@@ -116,22 +115,21 @@ app.post('/login', (req, res) => {
   
     // Basic validation
     if (!username || !password) {
-      return res.status(400).send('Username and password are required');
+      return res.status(400).json({message : 'Username and password are required'});
     }
-    console.log(username);
     // Check if the user exists and password is correct
     connection.query('SELECT * FROM userdetails WHERE user_name = ? AND password = ?', [username, password], (err, results) => {
 
       if (err) {
-        return res.status(500).send('Database error');
+        return res.status(500).json({message :'Database error'});
       }
   
       if (results.length === 0) {
-        return res.status(400).send('Invalid username or password');
+        return res.status(400).json({message :'Invalid username or password'});
       }
       
       // Successful login
-      res.status(200).send(results);
+      res.status(200).json({ message :"Login SuccessFull", data : results});
     });
   });
 
