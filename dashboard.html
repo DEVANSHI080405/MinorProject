@@ -70,7 +70,7 @@
                                  <div class="room-card">
                                         <div class="room-name" id="room-${room.room_name}">${room.room_name}</div>
                                         <div class="lights-count">${room.num_lights} </div>
-                                        <button onclick="${room.room_name}DetailsFunction()" id="roomDetails-${room.room_name}">Details</button>
+                                        <button onclick="DetailsFunction('${room.room_name}')" id="roomDetails-${room.room_name}">Details</button>
                                 </div>
                             <div>`;
                         });
@@ -89,36 +89,13 @@
           
         }
 
-
-        function HallDetailsFunction() {
-
+        function DetailsFunction(roomname)
+        {
+            const roomn = roomname;
             const params = new URLSearchParams(window.location.search);         
             const username = params.get("username");
-            const roomname = "Hall";
-            window.location.href = 'room.html?username='+ username + "&roomname="+roomname;
-
+            window.location.href = 'room.html?username='+ username + "&roomname="+roomn;
         }
-
-        
-        function KitchenDetailsFunction() {
-
-            const params = new URLSearchParams(window.location.search);         
-            const username = params.get("username");
-            const roomname = "Kitchen";
-            window.location.href = 'room.html?username='+ username + "&roomname="+roomname;
-
-        }
-
-
-        function BedroomDetailsFunction() {
-
-            const params = new URLSearchParams(window.location.search);         
-            const username = params.get("username");
-            const roomname = "Bedroom";
-            window.location.href = 'room.html?username='+ username + "&roomname="+roomname;
-
-        }
-
     
     </script>
 </html>
